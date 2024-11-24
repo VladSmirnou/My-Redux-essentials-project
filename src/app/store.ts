@@ -13,6 +13,7 @@ import {
 } from '@/features/notifications/model/notificationSlice'
 import { configureStore } from '@reduxjs/toolkit'
 import { name as app, appSliceReducer } from './appSlice'
+import { listenerMiddleware } from './listenerMiddleware'
 
 export const store = configureStore({
   reducer: {
@@ -21,6 +22,9 @@ export const store = configureStore({
     [posts]: postsSliceReducer,
     [notifications]: notificationsReducer,
     [app]: appSliceReducer,
+  },
+  middleware: (gDM) => {
+    return gDM().prepend(listenerMiddleware.middleware)
   },
 })
 

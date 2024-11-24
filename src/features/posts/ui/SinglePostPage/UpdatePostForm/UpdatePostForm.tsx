@@ -1,8 +1,11 @@
 import { Loader } from '@/common/components/Loader'
 import { useAppDispatch } from '@/common/hooks/useAppDispatch'
 import { useAppSelector } from '@/common/hooks/useAppSelector'
-import { updatePost } from '@/features/posts/model/postsSlice'
-import { selectPostsStatus } from '@/features/posts/model/selectors'
+import {
+  selectPostsStatus,
+  updatePost,
+} from '@/features/posts/model/postsSlice'
+
 import { useForm } from 'react-hook-form'
 
 const required = {

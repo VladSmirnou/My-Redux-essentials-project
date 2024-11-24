@@ -1,5 +1,5 @@
 import { useAppSelector } from '@/common/hooks/useAppSelector'
-import { selectUserById } from '@/features/users/model/selectors'
+import { selectUserById } from '@/features/users/model/usersSlice'
 import { Link } from 'react-router-dom'
 
 type Props = {

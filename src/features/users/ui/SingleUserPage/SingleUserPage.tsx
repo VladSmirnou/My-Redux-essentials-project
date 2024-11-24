@@ -1,7 +1,8 @@
 import { useAppSelector } from '@/common/hooks/useAppSelector'
-import { selectUserPosts } from '@/features/posts/model/selectors'
+
 import { Link, useParams } from 'react-router-dom'
-import { selectUserById } from '../../model/selectors'
+import { selectUserPosts } from '@/features/posts/model/postsSlice'
+import { selectUserById } from '../../model/usersSlice'
 
 export const SingleUserPage = () => {
   const { userId } = useParams<{ userId: string }>()

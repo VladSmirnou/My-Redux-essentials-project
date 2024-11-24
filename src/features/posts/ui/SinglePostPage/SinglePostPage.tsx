@@ -4,7 +4,7 @@ import { useAppSelector } from '@/common/hooks/useAppSelector'
 import { selectLoggedInUserId } from '@/features/auth/model/authSlice'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { selectPostById } from '../../model/selectors'
+import { selectPostById } from '../../model/postsSlice'
 import { UpdatePostForm } from './UpdatePostForm/UpdatePostForm'
 
 export const SinglePostPage = () => {
@@ -43,7 +43,7 @@ export const SinglePostPage = () => {
       <h2>{title}</h2>
       <PostMetadata userId={userId} timestamp={date} showPrefix />
       <p>{content}</p>
-      <Reactions reactions={reactions} />
+      <Reactions reactions={reactions} postId={post.id} />
       {editButton}
     </div>
   )

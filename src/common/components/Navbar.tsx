@@ -1,5 +1,4 @@
 import { logoutUser } from '@/features/auth/model/authSlice'
-import { selectLoggerInUserName } from '@/features/users/model/selectors'
 import { Link } from 'react-router-dom'
 import { useAppDispatch } from '../hooks/useAppDispatch'
 import { useAppSelector } from '../hooks/useAppSelector'
@@ -7,6 +6,7 @@ import {
   fetchNotifications,
   selectUnreadNotificationsCount,
 } from '@/features/notifications/model/notificationSlice'
+import { selectLoggerInUserName } from '@/features/users/model/usersSlice'
 
 export const Navbar = () => {
   const dispatch = useAppDispatch()

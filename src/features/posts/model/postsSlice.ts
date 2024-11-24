@@ -1,7 +1,14 @@
 import { client } from '@/api/client'
+import { appStatusChanged } from '@/app/appSlice'
 import { createAppSlice } from '@/app/createAppSlice'
+import type { AppStartListening } from '@/app/listenerMiddleware'
 import { RootState } from '@/app/store'
-import { selectPostsStatus } from './selectors'
+import {
+  createEntityAdapter,
+  createSelector,
+  current,
+  EntityState,
+} from '@reduxjs/toolkit'
 
 export type Reactions = {
   id: string
@@ -26,10 +33,19 @@ type Post = {
 
 type PostStatus = 'idle' | 'pending' | 'error' | 'success'
 
-const initialState = {
-  posts: [] as Array<Post>,
-  postStatus: 'idle' as PostStatus,
+interface PostsState extends EntityState<Post, string> {
+  status: PostStatus
+  error: string | null
 }
+
+export const postsAdapter = createEntityAdapter<Post>({
+  sortComparer: (a, b) => b.date.localeCompare(a.date),
+})
+
+const initialState: PostsState = postsAdapter.getInitialState({
+  status: 'idle',
+  error: null,
+})
 
 const postsSlice = createAppSlice({
   name: 'posts',
@@ -52,11 +68,12 @@ const postsSlice = createAppSlice({
           },
         },
         pending: (state) => {
-          state.postStatus = 'pending'
+          state.status = 'pending'
         },
         fulfilled: (state, action) => {
-          state.posts = action.payload
-          state.postStatus = 'success'
+          postsAdapter.setAll(state, action.payload)
+          // console.log(current(state))
+          state.status = 'success'
         },
       },
     ),
@@ -67,14 +84,14 @@ const postsSlice = createAppSlice({
       },
       {
         pending: (state) => {
-          state.postStatus = 'pending'
+          state.status = 'pending'
         },
         rejected: (state) => {
-          state.postStatus = 'error'
+          state.status = 'error'
         },
         fulfilled: (state, action) => {
-          state.postStatus = 'success'
-          state.posts.push(action.payload)
+          state.status = 'success'
+          postsAdapter.addOne(state, action.payload)
         },
       },
     ),
@@ -86,25 +103,21 @@ const postsSlice = createAppSlice({
       },
       {
         pending: (state) => {
-          state.postStatus = 'pending'
+          state.status = 'pending'
         },
         fulfilled: (state, action) => {
-          const post = state.posts.find(({ id }) => id === action.payload.id)
-          if (post) {
-            post.title = action.payload.title
-            post.content = action.payload.content
-          }
-          state.postStatus = 'success'
+          const { id, title, content } = action.payload
+          postsAdapter.updateOne(state, { id, changes: { title, content } })
+          state.status = 'success'
         },
       },
     ),
     updatePostReactions: create.reducer<{
-      reactionId: string
+      postId: string
       reaction: ReactionTypes
     }>((state, action) => {
-      const { reactionId, reaction } = action.payload
-
-      const post = state.posts.find((post) => post.reactions.id === reactionId)
+      const { postId, reaction } = action.payload
+      const post = state.entities[postId]
       if (post) {
         post.reactions[reaction]++
       }
@@ -115,3 +128,45 @@ const postsSlice = createAppSlice({
 export const { reducer: postsSliceReducer, name } = postsSlice
 export const { updatePostReactions, fetchPosts, createPost, updatePost } =
   postsSlice.actions
+
+const selectors = postsAdapter.getSelectors((state: RootState) => state.posts)
+
+export const {
+  selectById: selectPostById,
+  selectIds: selectSortedByDatePostIds,
+  selectAll: selectAllPosts,
+} = selectors
+
+export const selectPostsStatus = (state: RootState) => state.posts.status
+
+export const selectUserPosts = createSelector(
+  [selectAllPosts, (_: RootState, userId: string) => userId],
+  (posts, userId) => {
+    return posts.filter(({ user }) => user === userId)
+  },
+)
+
+export const addPostsListeners = (startAppListening: AppStartListening) => {
+  startAppListening({
+    actionCreator: createPost.fulfilled,
+    effect: async (action, listenerApi) => {
+      listenerApi.dispatch(
+        appStatusChanged({
+          status: 'success',
+          statusText: 'post added!',
+        }),
+      )
+    },
+  })
+  startAppListening({
+    actionCreator: createPost.rejected,
+    effect: async (action, listenerApi) => {
+      listenerApi.dispatch(
+        appStatusChanged({
+          status: 'error',
+          statusText: action.error.message,
+        }),
+      )
+    },
+  })
+}

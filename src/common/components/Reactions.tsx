@@ -7,10 +7,11 @@ import { useAppDispatch } from '../hooks/useAppDispatch'
 
 type Props = {
   reactions: R
+  postId: string
 }
 
 export const Reactions = (props: Props) => {
-  const { reactions } = props
+  const { reactions, postId } = props
   const { id: reactionId, ...rest } = reactions
 
   const dispatch = useAppDispatch()
@@ -20,9 +21,7 @@ export const Reactions = (props: Props) => {
     return (
       <button
         key={reaction}
-        onClick={() =>
-          dispatch(updatePostReactions({ reactionId, reaction: r }))
-        }
+        onClick={() => dispatch(updatePostReactions({ postId, reaction: r }))}
       >
         {reaction} {counter}
       </button>

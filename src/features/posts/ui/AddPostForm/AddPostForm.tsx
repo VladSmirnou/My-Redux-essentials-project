@@ -1,4 +1,3 @@
-import { appStatusChanged } from '@/app/appSlice'
 import { useAppDispatch } from '@/common/hooks/useAppDispatch'
 import { useAppSelector } from '@/common/hooks/useAppSelector'
 import { selectLoggedInUserId } from '@/features/auth/model/authSlice'
@@ -32,27 +31,7 @@ export const AddPostForm = () => {
   const dispatch = useAppDispatch()
 
   const onSubmit = (data: FormFields) => {
-    dispatch(createPost({ user: userId, ...data }))
-      .unwrap()
-      .then(
-        () => {
-          dispatch(
-            appStatusChanged({
-              status: 'success',
-              statusText: 'post added!',
-            }),
-          )
-        },
-        (error: { message: string }) => {
-          dispatch(
-            appStatusChanged({
-              status: 'error',
-              statusText: error.message,
-            }),
-          )
-        },
-      )
-      .finally(() => reset())
+    dispatch(createPost({ user: userId, ...data })).finally(() => reset())
   }
 
   return (

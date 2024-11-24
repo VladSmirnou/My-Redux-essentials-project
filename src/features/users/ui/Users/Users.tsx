@@ -1,6 +1,6 @@
 import { useAppSelector } from '@/common/hooks/useAppSelector'
 import { User } from './User/User'
-import { selectUserIds } from '../../model/selectors'
+import { selectUserIds } from '../../model/usersSlice'
 
 export const Users = () => {
   const userIds = useAppSelector(selectUserIds)

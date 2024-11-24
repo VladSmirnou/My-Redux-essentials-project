@@ -1,4 +1,4 @@
-import { selectUserById } from '@/features/users/model/selectors'
+import { selectUserById } from '@/features/users/model/usersSlice'
 import { useAppSelector } from '../hooks/useAppSelector'
 import { parseISO, formatDistanceToNow } from 'date-fns'
 

@@ -5,7 +5,7 @@ type AppStatus = 'idle' | 'success' | 'error'
 
 const initialState = {
   status: 'idle' as AppStatus,
-  statusText: null as string | null,
+  statusText: undefined as string | undefined,
 }
 
 type State = typeof initialState

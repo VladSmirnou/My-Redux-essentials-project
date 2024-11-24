@@ -2,20 +2,20 @@ import { Loader } from '@/common/components/Loader'
 import { useAppDispatch } from '@/common/hooks/useAppDispatch'
 import { useAppSelector } from '@/common/hooks/useAppSelector'
 import { useEffect } from 'react'
-import { fetchPosts } from '../../model/postsSlice'
 import {
+  fetchPosts,
   selectPostsStatus,
   selectSortedByDatePostIds,
-} from '../../model/selectors'
+} from '../../model/postsSlice'
+
 import { Post } from './Post/Post'
-import { shallowEqual } from 'react-redux'
 
 export const Posts = () => {
   const dispatch = useAppDispatch()
 
   const postsStatus = useAppSelector(selectPostsStatus)
 
-  const sortedPostIds = useAppSelector(selectSortedByDatePostIds, shallowEqual)
+  const sortedPostIds = useAppSelector(selectSortedByDatePostIds)
 
   useEffect(() => {
     dispatch(fetchPosts())
